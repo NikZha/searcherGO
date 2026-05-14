@@ -79,19 +79,25 @@
             }
             function makeAndSendJSON() {
                 let strJson = JSON.stringify(objLinks)
-                // let blobJson = new Blob([strJson], { type: 'text/json' })
-                // let linkJson = document.createElement('a')
-                // linkJson.href = URL.createObjectURL(blobJson)
-                // let request = document.getElementById('request')
-                // linkJson.download = 'data.json';
-                // request.append(linkJson)
-                // linkJson.click();
-                // request.remove(linkJson)
-                // URL.revokeObjectURL(linkJson)
+                 sendJSON(strJson)
             }
             function resetForm() {
                 const fileInput = document.getElementById('inputKagent');
                 fileInput.value = '';
+            }
+            async function sendJSON(json) {
+                let resp = await fetch('/postlinks', {
+                    method: 'Post',
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    },
+                    body: json
+                });
+                if (!resp.ok) {
+                    alert('Ошибка: ' + resp.status);
+                    return;
+                }
+
             }
         </script>
     </div>
