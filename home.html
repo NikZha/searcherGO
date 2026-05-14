@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск email по сохранённому поисковому файлу</title>
+</head>
+
+<body>
+    <div class="begin">
+        <h1>Поиск email по сохранённому поисковому файлу</h1>
+    </div>
+    <div class="makeJson">
+        <h3>Создание JSON из сохранённого поискового класса</h3>
+        <form name="get">
+            <label for="inputKagent">Выберите сохраннённый поиск в google или яндекс:</label>
+            <input type="file" name="getlink" id="inputKagent" onchange="loadLinksFromFile(this)">
+            <input type="button" value="Create JSON" onclick="makeJson()">
+        </form>
+        <div id="request"></div>
+        <div id="manylinks">
+
+        </div>
+        <script>
+            let objLinks = {
+                strrequest: '',
+                links: []
+            }
+            function loadLinksFromFile(input) {
+                const file = input.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const html = e.target.result;
+
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    let links = doc.querySelectorAll('a');
+                    let reqs = doc.querySelectorAll('input')
+
+                    if (links) {
+                        getHref(links)
+                    } else {
+                        alert('В файле не найдена таблица');
+                    }
+                    if (reqs) {
+                        getRequest(reqs)
+                    } else {
+                        alert('Не нашёл input')
+                    }
+                };
+
+                reader.onerror = () => alert('Ошибка чтения файла');
+                reader.readAsText(file);
+            }
+            function getHref(links) {
+                let arrayLinks = []
+                links.forEach(element => {
+                    if (element.href && !element.href.includes('yandex')
+                        && !element.href.includes('google')
+                        && !element.href.includes('ya.ru')
+                        && !element.href.includes('127.0.0.1')) {
+                        arrayLinks.push(element.href)
+                    }
+                });
+                objLinks.links = arrayLinks
+            }
+            function getRequest(inputs) {
+                console.log(inputs)
+                let strRequest = ''
+                inputs.forEach(input => {
+                    if (input.value) {
+                        strRequest += input.value
+                    }
+                });
+                objLinks.strrequest = strRequest
+            }
+            function makeJson() {
+                let strJson = JSON.stringify(objLinks)
+                let blobJson = new Blob([strJson], { type: 'text/json' })
+                let linkJson = document.createElement('a')
+                linkJson.href = URL.createObjectURL(blobJson)
+                let request = document.getElementById('request')
+                linkJson.download = 'data.json';
+                request.append(linkJson)
+                linkJson.click();
+                request.remove(linkJson)
+                URL.revokeObjectURL(linkJson)
+            }
+        </script>
+    </div>
+</body>
+
+</html>
