@@ -11,12 +11,12 @@
     <div class="begin">
         <h1>Поиск email по сохранённому поисковому файлу</h1>
     </div>
-    <div class="makeJson">
+    <div class="makeAndSendJson">
         <h3>Создание JSON из сохранённого поискового класса</h3>
         <form name="get">
             <label for="inputKagent">Выберите сохраннённый поиск в google или яндекс:</label>
             <input type="file" name="getlink" id="inputKagent" onchange="loadLinksFromFile(this)">
-            <input type="button" value="Create JSON" onclick="makeJson()">
+            <input type="button" value="Create JSON" onclick="makeAndSendJSON(); resetForm()">
         </form>
         <div id="request"></div>
         <div id="manylinks">
@@ -77,17 +77,21 @@
                 });
                 objLinks.strrequest = strRequest
             }
-            function makeJson() {
+            function makeAndSendJSON() {
                 let strJson = JSON.stringify(objLinks)
-                let blobJson = new Blob([strJson], { type: 'text/json' })
-                let linkJson = document.createElement('a')
-                linkJson.href = URL.createObjectURL(blobJson)
-                let request = document.getElementById('request')
-                linkJson.download = 'data.json';
-                request.append(linkJson)
-                linkJson.click();
-                request.remove(linkJson)
-                URL.revokeObjectURL(linkJson)
+                // let blobJson = new Blob([strJson], { type: 'text/json' })
+                // let linkJson = document.createElement('a')
+                // linkJson.href = URL.createObjectURL(blobJson)
+                // let request = document.getElementById('request')
+                // linkJson.download = 'data.json';
+                // request.append(linkJson)
+                // linkJson.click();
+                // request.remove(linkJson)
+                // URL.revokeObjectURL(linkJson)
+            }
+            function resetForm() {
+                const fileInput = document.getElementById('inputKagent');
+                fileInput.value = '';
             }
         </script>
     </div>
