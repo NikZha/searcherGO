@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -22,10 +23,30 @@ func readHttpFile(filename string) []byte {
 	return file
 }
 
+type Links struct {
+	StrRequest string   `json:"strrequest"`
+	Links      []string `json:"links"`
+}
+
+func postlinksHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		log.Fatalln(w, http.StatusMethodNotAllowed, "Only POST allowed")
+		return
+	}
+	var links Links
+	if err := json.NewDecoder(r.Body).Decode(&links); err != nil {
+		log.Fatalln(w, http.StatusBadRequest, "Invalid JSON")
+		return
+	}
+	defer r.Body.Close()
+	fmt.Println("Get links:", links)
+}
+
 func main() {
 	portNumber := 9000
 	httpPort := ":" + strconv.Itoa(portNumber)
 	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/postlinks", postlinksHandler)
 	fmt.Println("Сервер запущен на http://localhost:9000")
 
 	// Запускаем сервер
