@@ -3,10 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
+	"sync"
+	"time"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +43,73 @@ func postlinksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	fmt.Println("Get links:", links)
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	allResults := make([]ResposJson, 0, len(links.Links))
+
+	for _, url := range links.Links {
+		wg.Add(1)
+
+		// Запускаем горутину для каждого URL
+		go func(url string) {
+			defer wg.Done()
+
+			_, body := getBody(url)
+			var respJson ResposJson
+			respJson.Emails = getEmail(body)
+			respJson.Url = url
+
+			// Безопасно добавляем в общий срез
+			mu.Lock()
+			allResults = append(allResults, respJson)
+			mu.Unlock()
+		}(url) // Передаём URL как параметр!
+	}
+
+	wg.Wait() // Ждём завершения всех горутин
+
+	// Отправляем результат
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(allResults)
+}
+
+// Создаём клиент с ограничением редиректов
+var client = &http.Client{
+    Timeout: 30 * time.Second,
+    CheckRedirect: func(req *http.Request, via []*http.Request) error {
+        if len(via) >= 5 {  // Максимум 5 редиректов
+            return http.ErrUseLastResponse
+        }
+        return nil
+    },
+}
+
+func getBody(url string) (int, string) {
+    resp, err := client.Get(url)  // Используем настроенный клиент
+    if err != nil {
+        log.Printf("Error fetching %s: %v", url, err)
+        return 0, ""
+    }
+    defer resp.Body.Close()
+    
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        log.Printf("Error reading body %s: %v", url, err)
+        return resp.StatusCode, ""
+    }
+    
+    return resp.StatusCode, string(body)
+}
+
+func getEmail(htmlPage string) []string {
+	emailRegex := regexp.MustCompile(`[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}`)
+	emails := emailRegex.FindAllString(htmlPage, -1)
+	return emails
+}
+
+type ResposJson struct {
+	Emails []string `json:"emails"`
+	Url    string   `json:"url"`
 }
 
 func main() {

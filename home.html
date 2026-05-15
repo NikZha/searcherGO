@@ -79,7 +79,7 @@
             }
             function makeAndSendJSON() {
                 let strJson = JSON.stringify(objLinks)
-                 sendJSON(strJson)
+                sendJSON(strJson)
             }
             function resetForm() {
                 const fileInput = document.getElementById('inputKagent');
@@ -97,7 +97,12 @@
                     alert('Ошибка: ' + resp.status);
                     return;
                 }
-
+                let result = await resp.json();
+                if (Array.isArray(result)) {
+                    result.forEach((item, index) => {
+                        console.log(`Объект ${index}:`, item);
+                    });
+                }
             }
         </script>
     </div>
