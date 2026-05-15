@@ -61,7 +61,8 @@
                     if (element.href && !element.href.includes('yandex')
                         && !element.href.includes('google')
                         && !element.href.includes('ya.ru')
-                        && !element.href.includes('127.0.0.1')) {
+                        && !element.href.includes('127.0.0.1')
+                        && !element.href.includes('localhost')) {
                         arrayLinks.push(element.href)
                     }
                 });
@@ -98,11 +99,7 @@
                     return;
                 }
                 let result = await resp.json();
-                if (Array.isArray(result)) {
-                    result.forEach((item, index) => {
-                        console.log(`Объект ${index}:`, item);
-                    });
-                }
+                console.log(result)
             }
         </script>
     </div>
