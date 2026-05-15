@@ -80,13 +80,13 @@
             }
             function makeAndSendJSON() {
                 let strJson = JSON.stringify(objLinks)
-                sendJSON(strJson)
+                sendJSONgetResult(strJson)
             }
             function resetForm() {
                 const fileInput = document.getElementById('inputKagent');
                 fileInput.value = '';
             }
-            async function sendJSON(json) {
+            async function sendJSONgetResult(json) {
                 let resp = await fetch('/postlinks', {
                     method: 'Post',
                     headers: {
@@ -100,6 +100,37 @@
                 }
                 let result = await resp.json();
                 console.log(result)
+                makeTableOfResults(result)
+            }
+        </script>
+    </div>
+    <div class="makeTable">
+        <h3>Таблица резутатов поиска по запросу</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Емайлы</th>
+                    <th>Линк</th>
+                </tr>
+            </thead>
+            <tbody id="resultsOfSearching">
+
+            </tbody>
+        </table>
+        <script>
+            function makeTableOfResults(arrayResults) {
+                let tbody = document.getElementById('resultsOfSearching')
+                for (let i = 0; i < arrayResults.length; i++) {
+                    let tr = document.createElement('tr')
+                    tbody.append(tr)
+                    let tdEmails = document.createElement('td')
+                    let tdUrl = document.createElement('td')
+                    const element = arrayResults[i];
+                    tdEmails.append(element.emails)
+                    tr.append(tdEmails)
+                    tdUrl.append(element.url)
+                    tr.append(tdUrl)
+                }
             }
         </script>
     </div>
