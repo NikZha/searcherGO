@@ -5,6 +5,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Поиск email по сохранённому поисковому файлу</title>
+    <style>
+        span.validationError {
+            color: red;
+        }
+
+        body {
+            background-color: #f5f3f0;
+        }
+
+        table {
+            margin-left: 20px;
+            margin-right: 20px;
+            border: thin solid black;
+            caption-side: bottom;
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            border: thin dotted gray;
+            padding: 5px;
+        }
+
+        caption {
+            font-style: italic;
+            padding-top: 8px;
+        }
+
+        th {
+            background-color: #d4d3d1;
+        }
+
+        td {
+            background-color: #f1ede8;
+        }
+
+        td.emails {
+            width: 30%;
+        }
+    </style>
 </head>
 
 <body>
@@ -69,7 +109,6 @@
                 objLinks.links = arrayLinks
             }
             function getRequest(inputs) {
-                console.log(inputs)
                 let strRequest = ''
                 inputs.forEach(input => {
                     if (input.value) {
@@ -99,7 +138,6 @@
                     return;
                 }
                 let result = await resp.json();
-                console.log(result)
                 makeTableOfResults(result)
             }
         </script>
@@ -109,7 +147,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Емайлы</th>
+                    <th class="emails">Емайлы</th>
                     <th>Линк</th>
                 </tr>
             </thead>
@@ -126,11 +164,24 @@
                     let tdEmails = document.createElement('td')
                     let tdUrl = document.createElement('td')
                     const element = arrayResults[i];
-                    tdEmails.append(element.emails)
+                    makeEmailsLinks(tdEmails, element.emails)
+                    tdEmails.classList.add('emails')
                     tr.append(tdEmails)
-                    tdUrl.append(element.url)
+                    makeUrlLink(tdUrl, element.url)
                     tr.append(tdUrl)
                 }
+            }
+            function makeEmailsLinks(td, emails) {
+                if (emails === null) {
+                    td.append(emails)
+                } else {
+                    td.innerHTML = emails
+                        .map(email => `<a href="mailto:${email}?subject=Заявка">${email}</a>`)
+                        .join(', ');
+                }
+            }
+            function makeUrlLink(td, url) {
+                td.innerHTML = `<a href="${url}">${url}</a>`
             }
         </script>
     </div>

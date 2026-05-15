@@ -22,7 +22,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 func readHttpFile(filename string) []byte {
 	file, err := os.ReadFile(filename)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	return file
 }
@@ -34,12 +34,12 @@ type Links struct {
 
 func postlinksHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
-		log.Fatalln(w, http.StatusMethodNotAllowed, "Only POST allowed")
+		log.Println(w, http.StatusMethodNotAllowed, "Only POST allowed")
 		return
 	}
 	var links Links
 	if err := json.NewDecoder(r.Body).Decode(&links); err != nil {
-		log.Fatalln(w, http.StatusBadRequest, "Invalid JSON")
+		log.Println(w, http.StatusBadRequest, "Invalid JSON")
 		return
 	}
 	defer r.Body.Close()
@@ -87,14 +87,14 @@ var client = &http.Client{
 func getBody(url string) (int, string) {
     resp, err := client.Get(url)  // Используем настроенный клиент
     if err != nil {
-        log.Printf("Error fetching %s: %v", url, err)
+        log.Printf("Error fetching %s: %v\n", url, err)
         return 0, ""
     }
     defer resp.Body.Close()
     
     body, err := io.ReadAll(resp.Body)
     if err != nil {
-        log.Printf("Error reading body %s: %v", url, err)
+        log.Printf("Error reading body %s: %v\n", url, err)
         return resp.StatusCode, ""
     }
     
