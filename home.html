@@ -16,7 +16,7 @@
         <form name="get">
             <label for="inputKagent">Выберите сохраннённый поиск в google или яндекс:</label>
             <input type="file" name="getlink" id="inputKagent" onchange="loadLinksFromFile(this)">
-            <input type="button" value="Create JSON" onclick="makeAndSendJSON(); resetForm()">
+            <input type="button" value="Begin processing" onclick="makeAndSendJSON(); resetForm()">
         </form>
         <div id="request"></div>
         <div id="manylinks">
