@@ -56,7 +56,7 @@
         <form name="get">
             <label for="inputKagent">Выберите сохраннённый поиск в google или яндекс:</label>
             <input type="file" name="getlink" id="inputKagent" onchange="loadLinksFromFile(this)">
-            <input type="button" value="Begin processing" onclick="makeAndSendJSON(); resetForm()">
+            <input type="button" value="Begin processing" onclick="makeAndSendJSON(); resetFormAndOblLinksAndSetH3()">
         </form>
         <div id="request"></div>
         <div id="manylinks">
@@ -121,9 +121,15 @@
                 let strJson = JSON.stringify(objLinks)
                 sendJSONgetResult(strJson)
             }
-            function resetForm() {
+            function resetFormAndOblLinksAndSetH3() {
+                let reqMessage = document.getElementById('reqMessage')
+                if (objLinks.strrequest != '') reqMessage.innerHTML = objLinks.strrequest;
                 const fileInput = document.getElementById('inputKagent');
                 fileInput.value = '';
+                setTimeout(() => {
+                    objLinks.links = []
+                    objLinks.strrequest = ''
+                }, 1000);
             }
             async function sendJSONgetResult(json) {
                 let resp = await fetch('/postlinks', {
@@ -143,7 +149,7 @@
         </script>
     </div>
     <div class="makeTable">
-        <h3>Таблица резутатов поиска по запросу</h3>
+        <h3>Таблица резутатов поиска по запросу <span id="reqMessage"></span></h3>
         <table>
             <thead>
                 <tr>
