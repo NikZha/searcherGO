@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"maps"
 	"net"
 	"net/http"
 	"os"
 	"regexp"
+	"slices"
 	"strconv"
 	"sync"
 	"time"
@@ -57,7 +59,7 @@ func postlinksHandler(w http.ResponseWriter, r *http.Request) {
 
 			_, body := getBody(url)
 			var respJson ResposJson
-			respJson.Emails = getEmail(body)
+			respJson.Emails = clearCoincidencesEmails(getEmail(body))
 			respJson.Url = url
 
 			// Безопасно добавляем в общий срез
@@ -77,7 +79,7 @@ func postlinksHandler(w http.ResponseWriter, r *http.Request) {
 var client = &http.Client{
 	Timeout: 30 * time.Second,
 	CheckRedirect: func(req *http.Request, via []*http.Request) error {
-		if len(via) >= 5 { 
+		if len(via) >= 5 {
 			return http.ErrUseLastResponse
 		}
 		return nil
@@ -85,7 +87,7 @@ var client = &http.Client{
 }
 
 func getBody(url string) (int, string) {
-	resp, err := client.Get(url) 
+	resp, err := client.Get(url)
 	if err != nil {
 		log.Printf("Error fetching %s: %v\n", url, err)
 		return 0, ""
@@ -104,6 +106,15 @@ func getBody(url string) (int, string) {
 func getEmail(htmlPage string) []string {
 	emailRegex := regexp.MustCompile(`[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}`)
 	emails := emailRegex.FindAllString(htmlPage, -1)
+	return emails
+}
+
+func clearCoincidencesEmails(emails []string) []string {
+	setOfEmails := make(map[string]struct{})
+	for _, email := range emails {
+		setOfEmails[email] = struct{}{}
+	}
+	emails = slices.Collect(maps.Keys(setOfEmails))
 	return emails
 }
 
