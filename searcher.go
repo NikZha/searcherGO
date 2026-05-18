@@ -153,8 +153,8 @@ func main() {
 	httpPort := ":" + strconv.Itoa(portNumber)
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/postlinks", postlinksHandler)
-	fmt.Println("Сервер запущен на http://localhost" + httpPort)
+	fmt.Printf("Server started on address: http://localhost%s\n", httpPort)
 
-	// Запускаем сервер
+	
 	log.Fatal(http.ListenAndServe(httpPort, nil))
 }
