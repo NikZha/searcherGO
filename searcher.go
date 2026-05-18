@@ -74,11 +74,10 @@ func postlinksHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(allResults)
 }
 
-// Создаём клиент с ограничением редиректов
 var client = &http.Client{
 	Timeout: 30 * time.Second,
 	CheckRedirect: func(req *http.Request, via []*http.Request) error {
-		if len(via) >= 5 { // Максимум 5 редиректов
+		if len(via) >= 5 { 
 			return http.ErrUseLastResponse
 		}
 		return nil
@@ -86,7 +85,7 @@ var client = &http.Client{
 }
 
 func getBody(url string) (int, string) {
-	resp, err := client.Get(url) // Используем настроенный клиент
+	resp, err := client.Get(url) 
 	if err != nil {
 		log.Printf("Error fetching %s: %v\n", url, err)
 		return 0, ""
