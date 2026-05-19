@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Поиск email по сохранённому поисковому файлу</title>
+    <title>Email Search from Saved File</title>
     <style>
         span.validationError {
             color: red;
@@ -49,112 +49,110 @@
 
 <body>
     <div class="begin">
-        <h1>Поиск email по сохранённому поисковому файлу</h1>
+        <h1>Email Search from Saved File</h1>
+        <p>From Google, Yandex, and other search engines.</p>
     </div>
     <div class="makeAndSendJson">
-        <h3>Создание JSON из сохранённого поискового класса</h3>
         <form name="get">
-            <label for="inputKagent">Выберите сохраннённый поиск в google или яндекс:</label>
+            <label for="inputKagent">Choose saved file with seaching by search engine:</label>
             <input type="file" name="getlink" id="inputKagent" onchange="loadLinksFromFile(this)">
             <input type="button" value="Begin processing" onclick="makeAndSendJSON(); resetFormAndOblLinksAndSetH3()">
         </form>
-        <div id="request"></div>
-        <div id="manylinks">
 
-        </div>
-        <script>
-            let objLinks = {
-                strrequest: '',
-                links: []
-            }
-            function loadLinksFromFile(input) {
-                const file = input.files[0];
-                const reader = new FileReader();
+    </div>
+    <script>
+        let objLinks = {
+            strrequest: '',
+            links: []
+        }
+        function loadLinksFromFile(input) {
+            const file = input.files[0];
+            const reader = new FileReader();
 
-                reader.onload = function (e) {
-                    const html = e.target.result;
+            reader.onload = function (e) {
+                const html = e.target.result;
 
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
 
-                    let links = doc.querySelectorAll('a');
-                    let reqs = doc.querySelectorAll('input')
+                let links = doc.querySelectorAll('a');
+                let reqs = doc.querySelectorAll('input')
 
-                    if (links) {
-                        getHref(links)
-                    } else {
-                        alert('В файле не найдена таблица');
-                    }
-                    if (reqs) {
-                        getRequest(reqs)
-                    } else {
-                        alert('Не нашёл input')
-                    }
-                };
-
-                reader.onerror = () => alert('Ошибка чтения файла');
-                reader.readAsText(file);
-            }
-            function getHref(links) {
-                let arrayLinks = []
-                links.forEach(element => {
-                    if (element.href && !element.href.includes('yandex')
-                        && !element.href.includes('google')
-                        && !element.href.includes('ya.ru')
-                        && !element.href.includes('127.0.0.1')
-                        && !element.href.includes('localhost')) {
-                        arrayLinks.push(element.href)
-                    }
-                });
-                objLinks.links = arrayLinks
-            }
-            function getRequest(inputs) {
-                let strRequest = ''
-                inputs.forEach(input => {
-                    if (input.value) {
-                        strRequest += input.value
-                    }
-                });
-                objLinks.strrequest = strRequest
-            }
-            function makeAndSendJSON() {
-                let strJson = JSON.stringify(objLinks)
-                sendJSONgetResult(strJson)
-            }
-            function resetFormAndOblLinksAndSetH3() {
-                let reqMessage = document.getElementById('reqMessage')
-                if (objLinks.strrequest != '') reqMessage.innerHTML = objLinks.strrequest;
-                const fileInput = document.getElementById('inputKagent');
-                fileInput.value = '';
-                setTimeout(() => {
-                    objLinks.links = []
-                    objLinks.strrequest = ''
-                }, 1000);
-            }
-            async function sendJSONgetResult(json) {
-                let resp = await fetch('/postlinks', {
-                    method: 'Post',
-                    headers: {
-                        'Content-Type': 'application/json;charset=utf-8'
-                    },
-                    body: json
-                });
-                if (!resp.ok) {
-                    alert('Ошибка: ' + resp.status);
-                    return;
+                if (links) {
+                    getHref(links)
+                } else {
+                    alert('В файле не найдена таблица');
                 }
-                let result = await resp.json();
-                makeTableOfResults(result)
+                if (reqs) {
+                    getRequest(reqs)
+                } else {
+                    alert('Не нашёл input')
+                }
+            };
+
+            reader.onerror = () => alert('Ошибка чтения файла');
+            reader.readAsText(file);
+        }
+        function getHref(links) {
+            let arrayLinks = []
+            links.forEach(element => {
+                if (element.href && !element.href.includes('yandex')
+                    && !element.href.includes('google')
+                    && !element.href.includes('ya.ru')
+                    && !element.href.includes('127.0.0.1')
+                    && !element.href.includes('localhost')) {
+                    arrayLinks.push(element.href)
+                }
+            });
+            objLinks.links = arrayLinks
+        }
+        function getRequest(inputs) {
+            let strRequest = ''
+            inputs.forEach(input => {
+                if (input.value) {
+                    strRequest += input.value
+                }
+            });
+            objLinks.strrequest = strRequest
+        }
+        function makeAndSendJSON() {
+            let strJson = JSON.stringify(objLinks)
+            sendJSONgetResult(strJson)
+        }
+        function resetFormAndOblLinksAndSetH3() {
+            let reqMessage = document.getElementById('reqMessage')
+            if (objLinks.strrequest != '') reqMessage.innerHTML = objLinks.strrequest;
+            const fileInput = document.getElementById('inputKagent');
+            fileInput.value = '';
+            setTimeout(() => {
+                objLinks.links = []
+                objLinks.strrequest = ''
+            }, 1000);
+        }
+        async function sendJSONgetResult(json) {
+            let resp = await fetch('/postlinks', {
+                method: 'Post',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: json
+            });
+            if (!resp.ok) {
+                alert('Ошибка: ' + resp.status);
+                return;
             }
-        </script>
+            let result = await resp.json();
+            makeTableOfResults(result)
+        }
+    </script>
     </div>
     <div class="makeTable">
-        <h3>Таблица резутатов поиска по запросу <span id="reqMessage"></span></h3>
+        <h3>Table of results searching by query <span id="reqMessage"></span></h3>
         <table>
             <thead>
                 <tr>
-                    <th class="emails">Емайлы</th>
-                    <th>Линк</th>
+                    <th class="emails">Emails</th>
+                    <th>URL</th>
                 </tr>
             </thead>
             <tbody id="resultsOfSearching">
