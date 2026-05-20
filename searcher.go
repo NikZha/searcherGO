@@ -16,9 +16,11 @@ import (
 	"time"
 )
 
+var homePath string = "./static/home.html"
+
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	httpLoad := readHttpFile("home.html")
+	httpLoad := readHttpFile(homePath)
 	w.Write(httpLoad)
 }
 
@@ -151,10 +153,10 @@ func main() {
 	portNumber := 9000
 	portNumber = getPort(portNumber)
 	httpPort := ":" + strconv.Itoa(portNumber)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/postlinks", postlinksHandler)
 	fmt.Printf("Server started on address: http://localhost%s\n", httpPort)
 
-	
 	log.Fatal(http.ListenAndServe(httpPort, nil))
 }
