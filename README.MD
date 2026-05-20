@@ -57,7 +57,7 @@ After launching, open a browser and navigate to the address written in the conso
 5. The result is returned as a table
 
 ## 📄 License
-MIT License - free to use, modify, and redistribute.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) - free to use, modify, and redistribute.
 
 ## 🙌 Acknowledgments
 Inspired by the real need to speed up the search for components and business contacts.
