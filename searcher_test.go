@@ -26,3 +26,11 @@ func TestClearCoincidencesEmails(t *testing.T) {
 		t.Errorf("arrayEmails[1] = %s; want 1@1.1", arrayEmails[1])
 	}
 }
+
+func TestGetPort(t *testing.T)  {
+	httpPort := 9000
+	recivedPort := getPort(httpPort)
+	if (recivedPort < httpPort && recivedPort != httpPort){
+		t.Errorf("recivedPort must be equal or hier than %d, but recivedPort = %d\n", httpPort, recivedPort)
+	}
+}
