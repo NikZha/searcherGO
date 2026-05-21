@@ -27,10 +27,15 @@ func TestClearCoincidencesEmails(t *testing.T) {
 	}
 }
 
-func TestGetPort(t *testing.T)  {
-	httpPort := 9000
-	recivedPort := getPort(httpPort)
-	if (recivedPort < httpPort && recivedPort != httpPort){
-		t.Errorf("recivedPort must be equal or hier than %d, but recivedPort = %d\n", httpPort, recivedPort)
+func TestGetPort(t *testing.T) {
+	startPort := 9000
+	gotPort := getPort(startPort)
+
+	if gotPort < startPort {
+		t.Errorf("getPort(%d) = %d; want >= %d", startPort, gotPort, startPort)
+	}
+
+	if gotPort > startPort+1000 {
+		t.Errorf("getPort(%d) = %d; want <= %d (or adjust limit)", startPort, gotPort, startPort+1000)
 	}
 }
