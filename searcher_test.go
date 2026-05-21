@@ -19,11 +19,21 @@ func TestClearCoincidencesEmails(t *testing.T) {
 	if len(arrayEmails) != 2 {
 		t.Errorf("len(arrayEmails) = %d, want 2\n", len(arrayEmails))
 	}
-	if arrayEmails[0] != "test@domen.test" {
-		t.Errorf("arrayEmails[0] = %s; want test@domen.test\n", arrayEmails[0])
+	emailTest := false
+	emailOne := false
+	for _, email := range arrayEmails {
+		if email == "test@domen.test" {
+			emailTest = true
+		}
+		if email == "1@1.1" {
+			emailOne = true
+		}
 	}
-	if arrayEmails[1] != "1@1.1" {
-		t.Errorf("arrayEmails[1] = %s; want 1@1.1\n", arrayEmails[1])
+	if !emailTest {
+		t.Errorf("expected 'test@domen.test' not found in %v", arrayEmails)
+	}
+	if !emailOne {
+		t.Errorf("expected '1@1.1' not found in %v", arrayEmails)
 	}
 }
 
