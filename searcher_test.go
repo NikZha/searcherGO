@@ -13,6 +13,17 @@ func TestGetEmail(t *testing.T) {
 	}
 }
 
+func TestGetEmail_BrokenEmail(t *testing.T) {
+	htmlBody := "<a href=\"mailto:test@domen.tesdddddt\">Send email</a>:"
+	arrayEmails := getEmail(htmlBody)
+	if len(arrayEmails) != 1 {
+		t.Errorf("len(arrayEmails) = %d, want 1\n", len(arrayEmails))
+	}
+	if arrayEmails[0] != "test@domen.test" {
+		t.Errorf("arrayEmails = %v; want test@domen.test\n", arrayEmails[0])
+	}
+}
+
 func TestClearCoincidencesEmails(t *testing.T) {
 	arrayEmails := []string{"test@domen.test", "test@domen.test", "1@1.1", "1@1.1"}
 	arrayEmails = clearCoincidencesEmails(arrayEmails)
