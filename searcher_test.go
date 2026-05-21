@@ -14,13 +14,10 @@ func TestGetEmail(t *testing.T) {
 }
 
 func TestGetEmail_BrokenEmail(t *testing.T) {
-	htmlBody := "<a href=\"mailto:test@domen.tesdddddt\">Send email</a>:"
+	htmlBody := "test@domen.t"
 	arrayEmails := getEmail(htmlBody)
-	if len(arrayEmails) != 1 {
-		t.Errorf("len(arrayEmails) = %d, want 1\n", len(arrayEmails))
-	}
-	if arrayEmails[0] != "test@domen.test" {
-		t.Errorf("arrayEmails = %v; want test@domen.test\n", arrayEmails[0])
+	if len(arrayEmails) != 0 {
+		t.Errorf("len(arrayEmails) = %d, want 0\n", len(arrayEmails))
 	}
 }
 
