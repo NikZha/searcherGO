@@ -17,6 +17,15 @@ func TestHomeHandler(t *testing.T) {
 	}
 }
 
+func TestPostlinksHandler(t *testing.T) {
+	req := httptest.NewRequest("POST", "/", nil)
+	rr := httptest.NewRecorder()
+	postlinksHandler(rr, req)
+	if rr.Code != http.StatusOK {
+		t.Errorf("got %d, want %d", rr.Code, http.StatusOK)
+	}
+}
+
 func TestGetEmail(t *testing.T) {
 	htmlBody := "<a href=\"mailto:test@domen.test\">Send email</a>:"
 	arrayEmails := getEmail(htmlBody)
