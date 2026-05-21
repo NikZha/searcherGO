@@ -1,6 +1,11 @@
 package main
 
-import "testing"
+import (
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+)
 
 func TestGetEmail(t *testing.T) {
 	htmlBody := "<a href=\"mailto:test@domen.test\">Send email</a>:"
@@ -55,5 +60,22 @@ func TestGetPort(t *testing.T) {
 
 	if gotPort > startPort+1000 {
 		t.Errorf("getPort(%d) = %d; want <= %d (or adjust limit)", startPort, gotPort, startPort+1000)
+	}
+}
+
+func TestGetBody(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":"ok","site":"example"}`))
+	}))
+	defer server.Close()
+	statusCode, body := getBody(server.URL)
+	if statusCode != 200 {
+		t.Errorf("status code = %d, want 200", statusCode)
+	}
+	isExample := strings.Contains(string(body), "example")
+
+	if !isExample {
+		t.Errorf("body = %s, want contains 'example", body)
 	}
 }
